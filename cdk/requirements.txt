@@ -1,3 +1,5 @@
+-e .
+aws_cdk.core
 aws_cdk.aws_secretsmanager
 aws_cdk.aws_cloudformation
 aws_cdk.custom_resources
