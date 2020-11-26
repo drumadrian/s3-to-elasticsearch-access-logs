@@ -12,14 +12,14 @@ import aws_cdk.aws_sqs as aws_sqs
 from aws_cdk.aws_lambda_event_sources import SqsEventSource
 import aws_cdk.aws_elasticsearch as aws_elasticsearch
 import aws_cdk.aws_cognito as aws_cognito
-import aws_cdk.aws_apigatewayv2 as aws_apigatewayv2
+# import aws_cdk.aws_apigatewayv2 as aws_apigatewayv2
 import aws_cdk.aws_elasticloadbalancingv2 as aws_elasticloadbalancingv2
 import aws_cdk.aws_ec2 as aws_ec2
 
-from aws_cdk.core import CustomResource
+# from aws_cdk.core import CustomResource
 import aws_cdk.aws_logs as logs
-import aws_cdk.custom_resources as cr
-
+# import aws_cdk.custom_resources as cr
+# import aws_cdk.aws_kinesisfirehose as aws_kinesisfirehose
 
 
 class CdkStack(core.Stack):
@@ -32,122 +32,99 @@ class CdkStack(core.Stack):
         ###########################################################################
         # AWS SECRETS MANAGER - Templated secret 
         ###########################################################################
-        templated_secret = aws_secretsmanager.Secret(self, "TemplatedSecret",
-            generate_secret_string=aws_secretsmanager.SecretStringGenerator(
-                secret_string_template= "{\"username\":\"cleanbox\"}",
-                generate_string_key="password"
-            )
-        )
+        # templated_secret = aws_secretsmanager.Secret(self, "TemplatedSecret",
+        #     generate_secret_string=aws_secretsmanager.SecretStringGenerator(
+        #         secret_string_template= "{\"username\":\"cleanbox\"}",
+        #         generate_string_key="password"
+        #     )
+        # )
         ###########################################################################
         # CUSTOM CLOUDFORMATION RESOURCE 
         ###########################################################################
-        customlambda = aws_lambda.Function(self,'customconfig',
-        handler='customconfig.on_event',
-        runtime=aws_lambda.Runtime.PYTHON_3_7,
-        code=aws_lambda.Code.asset('customconfig'),
-        )
+        # customlambda = aws_lambda.Function(self,'customconfig',
+        # handler='customconfig.on_event',
+        # runtime=aws_lambda.Runtime.PYTHON_3_7,
+        # code=aws_lambda.Code.asset('customconfig'),
+        # )
 
-        customlambda_statement = aws_iam.PolicyStatement(actions=["events:PutRule"], conditions=None, effect=None, not_actions=None, not_principals=None, not_resources=None, principals=None, resources=["*"], sid=None)
-        customlambda.add_to_role_policy(statement=customlambda_statement)
+        # customlambda_statement = aws_iam.PolicyStatement(actions=["events:PutRule"], conditions=None, effect=None, not_actions=None, not_principals=None, not_resources=None, principals=None, resources=["*"], sid=None)
+        # customlambda.add_to_role_policy(statement=customlambda_statement)
 
-        my_provider = cr.Provider(self, "MyProvider",
-            on_event_handler=customlambda,
-            # is_complete_handler=is_complete, # optional async "waiter"
-            log_retention=logs.RetentionDays.SIX_MONTHS
-        )
+        # my_provider = cr.Provider(self, "MyProvider",
+        #     on_event_handler=customlambda,
+        #     # is_complete_handler=is_complete, # optional async "waiter"
+        #     log_retention=logs.RetentionDays.SIX_MONTHS
+        # )
 
-        CustomResource(self, 'customconfigresource', service_token=my_provider.service_token)
+        # CustomResource(self, 'customconfigresource', service_token=my_provider.service_token)
 
 
         ###########################################################################
         # AWS LAMBDA FUNCTIONS 
         ###########################################################################
-        sqs_to_elastic_cloud_lambda_access_logs = aws_lambda.Function(self,'sqs_to_elastic_cloud_lambda_access_logs',
-        handler='sqs_to_elastic_cloud_lambda_access_logs.lambda_handler',
+        sqs_to_elastic_cloud = aws_lambda.Function(self,'sqs_to_elastic_cloud',
+        handler='sqs_to_elastic_cloud.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
-        code=aws_lambda.Code.asset('sqs_to_elastic_cloud_lambda_access_logs'),
+        code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
         )
 
-        sqs_to_elastic_cloud_lambda_cloudtrail = aws_lambda.Function(self,'sqs_to_elastic_cloud_lambda_cloudtrail',
-        handler='sqs_to_elastic_cloud_lambda_cloudtrail.lambda_handler',
+        sqs_to_elasticsearch_service = aws_lambda.Function(self,'sqs_to_elasticsearch_service',
+        handler='sqs_to_elasticsearch_service.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
-        code=aws_lambda.Code.asset('sqs_to_elastic_cloud_lambda_cloudtrail'),
+        code=aws_lambda.Code.asset('sqs_to_elasticsearch_service'),
         )
 
-        sqs_to_elastic_search_lambda_access_logs = aws_lambda.Function(self,'sqs_to_elastic_search_lambda_access_logs',
-        handler='sqs_to_elastic_search_lambda_access_logs.lambda_handler',
-        runtime=aws_lambda.Runtime.PYTHON_3_7,
-        code=aws_lambda.Code.asset('sqs_to_elastic_search_lambda_access_logs'),
-        )
+        # sqs_to_elasticsearch_service.add_environment("kinesis_firehose_name", "-")
+        # sqs_to_elastic_cloud.add_environment("index_name", "-")
 
-        sqs_to_elastic_search_lambda_cloudtrail = aws_lambda.Function(self,'sqs_to_elastic_search_lambda_cloudtrail',
-        handler='sqs_to_elastic_search_lambda_cloudtrail.lambda_handler',
-        runtime=aws_lambda.Runtime.PYTHON_3_7,
-        code=aws_lambda.Code.asset('sqs_to_elastic_search_lambda_cloudtrail'),
-        )
-        sqs_to_elastic_search_lambda_cloudtrail.add_environment("ES_ENDPOINT", "-")
-        sqs_to_elastic_search_lambda_cloudtrail.add_environment("index_name", "-")
-        sqs_to_elastic_search_lambda_cloudtrail.add_environment("ES_DOC_TYPE", "cloudtrail")
-
-
-
+        ###########################################################################
+        # AWS LAMBDA FUNCTIONS 
+        ###########################################################################
+        # sqs_to_elasticsearch_service_permission = aws_lambda.Permission(*, principal, action=None, event_source_token=None, scope=None, source_account=None, source_arn=None)
 
         ###########################################################################
         # AMAZON S3 BUCKETS 
         ###########################################################################
         access_log_bucket = aws_s3.Bucket(self, "access_log_bucket")
-        cloudtrail_bucket = aws_s3.Bucket(self, "cloudtrail_bucket")
 
 
         ###########################################################################
         # AWS SNS TOPICS 
         ###########################################################################
         access_log_topic = aws_sns.Topic(self, "access_log_topic")
-        cloudtrail_topic = aws_sns.Topic(self, "cloudtrail_topic")
 
 
         ###########################################################################
         # ADD AMAZON S3 BUCKET NOTIFICATIONS
         ###########################################################################
         access_log_bucket.add_event_notification(aws_s3.EventType.OBJECT_CREATED, aws_s3_notifications.SnsDestination(access_log_topic))
-        cloudtrail_bucket.add_event_notification(aws_s3.EventType.OBJECT_CREATED, aws_s3_notifications.SnsDestination(cloudtrail_topic))
 
 
         ###########################################################################
         # AWS SQS QUEUES
         ###########################################################################
-        sqs_to_elastic_cloud_lambda_access_logs_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_lambda_access_logs_queue")
-
-        sqs_to_elastic_cloud_lambda_cloudtrail_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_lambda_cloudtrail_queue")
-
-        sqs_to_elastic_search_lambda_access_logs_queue = aws_sqs.Queue(self, "sqs_to_elastic_search_lambda_access_logs_queue")
-
-        sqs_to_elastic_search_lambda_cloudtrail_queue = aws_sqs.Queue(self, "sqs_to_elastic_search_lambda_cloudtrail_queue")
+        sqs_to_elastic_cloud_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue")
+        sqs_to_elasticsearch_service_queue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue")
 
 
         ###########################################################################
         # AWS SNS TOPIC SUBSCRIPTIONS
         ###########################################################################
-        access_log_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elastic_cloud_lambda_access_logs_queue))
-        access_log_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elastic_search_lambda_access_logs_queue))
-
-        cloudtrail_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elastic_cloud_lambda_cloudtrail_queue))
-        cloudtrail_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elastic_search_lambda_cloudtrail_queue))
+        access_log_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elastic_cloud_queue))
+        access_log_topic.add_subscription(aws_sns_subscriptions.SqsSubscription(sqs_to_elasticsearch_service_queue))
 
         
         ###########################################################################
         # AWS LAMBDA SQS EVENT SOURCE
         ###########################################################################
-        sqs_to_elastic_cloud_lambda_access_logs.add_event_source(SqsEventSource(sqs_to_elastic_cloud_lambda_access_logs_queue,batch_size=10))
-        sqs_to_elastic_cloud_lambda_cloudtrail.add_event_source(SqsEventSource(sqs_to_elastic_cloud_lambda_cloudtrail_queue,batch_size=10))
-        sqs_to_elastic_search_lambda_access_logs.add_event_source(SqsEventSource(sqs_to_elastic_search_lambda_access_logs_queue,batch_size=10))
-        sqs_to_elastic_search_lambda_cloudtrail.add_event_source(SqsEventSource(sqs_to_elastic_search_lambda_cloudtrail_queue,batch_size=10))
+        sqs_to_elastic_cloud.add_event_source(SqsEventSource(sqs_to_elastic_cloud_queue,batch_size=10))
+        sqs_to_elasticsearch_service.add_event_source(SqsEventSource(sqs_to_elasticsearch_service_queue,batch_size=10))
 
 
         ###########################################################################
         # AWS ELASTICSEARCH DOMAIN
         ###########################################################################
-        s3_to_elasticsearch_domain = aws_elasticsearch.Domain(self, "s3-to-elasticsearch",
+        s3_to_elasticsearch_access_logs_domain = aws_elasticsearch.Domain(self, "s3-to-elasticsearch-access-logs-domain",
             version=aws_elasticsearch.ElasticsearchVersion.V7_1,
             capacity={
                 "master_nodes": 3,
@@ -170,7 +147,7 @@ class CdkStack(core.Stack):
         ###########################################################################
         # AMAZON COGNITO USER POOL
         ###########################################################################
-        s3_to_elasticsearch_user_pool = aws_cognito.UserPool(self, "s3-to-elasticsearch-pool",
+        s3_to_elasticsearch_user_pool = aws_cognito.UserPool(self, "s3-to-elasticsearch-access-logs-pool",
                                                             account_recovery=None, 
                                                             auto_verify=None, 
                                                             custom_attributes=None, 
@@ -191,3 +168,12 @@ class CdkStack(core.Stack):
                                                             user_verification=None
                                                             )
 
+
+        ###########################################################################
+        # AMAZON KINESIS FIREHOSE STREAM
+        ###########################################################################
+        # delivery_stream_encryption_configuration_input = aws_kinesisfirehose.delivery_stream_encryption_configuration_input
+
+        # kinesis_firehose_stream = aws_cdk.aws_kinesisfirehose.CfnDeliveryStreamProps(*, delivery_stream_encryption_configuration_input=None, delivery_stream_name=None, delivery_stream_type=None, elasticsearch_destination_configuration=None, extended_s3_destination_configuration=None, http_endpoint_destination_configuration=None, kinesis_stream_source_configuration=None, redshift_destination_configuration=None, s3_destination_configuration=None, splunk_destination_configuration=None, tags=None)
+
+        sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", "-")
