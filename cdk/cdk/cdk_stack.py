@@ -86,6 +86,7 @@ class CdkStack(core.Stack):
         # AMAZON S3 BUCKETS 
         ###########################################################################
         access_log_bucket = aws_s3.Bucket(self, "access_log_bucket")
+        kinesis_log_bucket = aws_s3.Bucket(self, "kinesis_log_bucket")
 
 
         ###########################################################################
