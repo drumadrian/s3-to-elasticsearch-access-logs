@@ -20,7 +20,7 @@ import os
 #   References
 ################################################################################################################
 # https://stackoverflow.com/questions/37703634/how-to-import-a-text-file-on-aws-s3-into-pandas-without-writing-to-disk
-
+# https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html
 
 
 
@@ -33,18 +33,8 @@ import os
 # logger = logging.getLogger()
 # logger = logging.getLogger(__name__)
 # logger.setLevel(logging.INFO)
-# local_event = {
-#   "Type": "Notification",
-#   "MessageId": "13633be1-07c9-5cfb-97fd-63f839213d0a",
-#   "TopicArn": "arn:aws:sns:us-west-2:696965430582:s3-to-elasticsearch-cloudtrailtopicB7B8FCF0-1GS0NFTZALHZE",
-#   "Subject": "Amazon S3 Notification",
-#   "Message": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-west-2\",\"eventTime\":\"2020-11-01T22:54:29.962Z\",\"eventName\":\"ObjectCreated:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROAJUND6457V5TEWWO3C:regionalDeliverySession\"},\"requestParameters\":{\"sourceIPAddress\":\"18.236.69.182\"},\"responseElements\":{\"x-amz-request-id\":\"51EA1F9F383688EB\",\"x-amz-id-2\":\"1+mvRHMgXCv5Kg72hN4TePjfmubbDZ++8mdtSdiWH495ioiwFcZsPIGryMCoXUoLd2LHez/lvJRtyUzJMioRa1okMtvAW0uo\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"YjlhNTNjOTYtYWNhNi00NjgwLTk4MjctMzc5MWQzYjg0NmRi\",\"bucket\":{\"name\":\"s3-to-elasticsearch-cloudtrailbucket651b1cf1-1sxwk9yev080b\",\"ownerIdentity\":{\"principalId\":\"A316ENPQ0L9WVA\"},\"arn\":\"arn:aws:s3:::s3-to-elasticsearch-cloudtrailbucket651b1cf1-1sxwk9yev080b\"},\"object\":{\"key\":\"AWSLogs/o-2xh1murzat/696965430582/CloudTrail/us-west-2/2020/11/01/696965430582_CloudTrail_us-west-2_20201101T2250Z_V84r5ej0Vt9EciUg.json.gz\",\"size\":4110,\"eTag\":\"e20e963bef843cf2b7163ab056d103fd\",\"sequencer\":\"005F9F3CA6B68F3A51\"}}}]}",
-#   "Timestamp": "2020-11-01T22:54:32.259Z",
-#   "SignatureVersion": "1",
-#   "Signature": "Kca+UZACv7JDg8maASWVX1cxvAVN1bytqnD+yE3xsW0/Hgzg0/U8+BkhAp2ZNCJhOv6kXuTP0cfj3ptqB0+I9fbhfUTgV5v2YjaGA1hJnfXCT3otDeZ4VYjEqFWYVlqgh6NEbeLNHgod8hsGjbRnWNVqpQVf01KnwuTT1NTh4j2Z6ArVGErWaN07OcDF8pRmPhbnAL1SOf41tVPvK0S1fsqMESDuKPXnnoJYyDmCvgoFO02kcercXcQ1PwJxk58svQKV25S/wCXD9a4rE991mQUUJjpS/TBq6WU8hIlSMGXKvBXoz8L5YXApCLhhqVe0RN2tJNPotg9kvVz5w7LoIg==",
-#   "SigningCertURL": "https://sns.us-west-2.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
-#   "UnsubscribeURL": "https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:696965430582:s3-to-elasticsearch-cloudtrailtopicB7B8FCF0-1GS0NFTZALHZE:f2b8ee22-4fea-4e57-b3c9-9a6f12f635cf"
-# }
+# local_event = {"Messages": [{"MessageId": "d7c42a19-d145-4511-90c5-f03d9a440f0a", "ReceiptHandle": "AQEBCzWbUdLHaPvIaHsTn/qlRHf5b31v4joEkK8vk8a6yZcC5t6PFZOwiGBX87e2AzLshceHxvgeezyumfxsqr9jrRlN4c+lbPSwqgpxHd/8MoMY184ygLMHO5hDSxC2H/kqdytmXLXlDQGvMg0Wpk05s8JRgqABeZqp45u6vw2jjg6zn4LpAqp7PbCjkezRKLRXG6MLyu6bntAVRQW8A15XxAItdYwesYtaqW5CH7Fwql5m9/DU11ng8uFpNedqVeScXr05BFA0NNgjma8NAjjPx04LdjSijs/7jPVvStrgrDOTLx1reTWiiHSp8rY8Sr901bh+Eg6n6Ur2GfRrGfSXrbiCzEJ0quANrC1MfSzw5XlUZP9a4iaNZsrEIoie+rKk3tE1haU+LJDKFQkb6mDv+SRVGRCwDd9cli3kZiBDvPEerG731nKmJ5g+OTTHLKnqcWLWbwAcZY9vKgBY0btN87ytp6Kgas6FgSiy4nmX+08=", "MD5OfBody": "d9715be551a977168000acd973a8072d", "Body": "{\n  \"Type\" : \"Notification\",\n  \"MessageId\" : \"f952167c-e75f-5371-b2dc-4e476c7f9027\",\n  \"TopicArn\" : \"arn:aws:sns:us-west-2:696965430582:s3-to-elasticsearch-access-logs-accesslogtopic6A6F66D7-1CVZECE32AT4M\",\n  \"Subject\" : \"Amazon S3 Notification\",\n  \"Message\" : \"{\\\"Records\\\":[{\\\"eventVersion\\\":\\\"2.1\\\",\\\"eventSource\\\":\\\"aws:s3\\\",\\\"awsRegion\\\":\\\"us-west-2\\\",\\\"eventTime\\\":\\\"2020-11-27T23:16:47.489Z\\\",\\\"eventName\\\":\\\"ObjectCreated:Put\\\",\\\"userIdentity\\\":{\\\"principalId\\\":\\\"A2HRK4T7OWQKNJ\\\"},\\\"requestParameters\\\":{\\\"sourceIPAddress\\\":\\\"172.16.120.122\\\"},\\\"responseElements\\\":{\\\"x-amz-request-id\\\":\\\"950C0A33F57DF771\\\",\\\"x-amz-id-2\\\":\\\"SKd42p7jsiL+doA2Qz8B3gYtE8lCT8kkol67jBCl3+40ltnzOVNMCX2JLXdv4ET8e1KlCmTN/n4QgjYZn72XTg5HWQf92pQh\\\"},\\\"s3\\\":{\\\"s3SchemaVersion\\\":\\\"1.0\\\",\\\"configurationId\\\":\\\"NTY3YTQ4NWItMDVmOS00MTA2LTg4OTgtOWFmZTEwODllMzRj\\\",\\\"bucket\\\":{\\\"name\\\":\\\"s3-to-elasticsearch-acces-accesslogbucket5c1457b7-151mo29j9uf83\\\",\\\"ownerIdentity\\\":{\\\"principalId\\\":\\\"A316ENPQ0L9WVA\\\"},\\\"arn\\\":\\\"arn:aws:s3:::s3-to-elasticsearch-acces-accesslogbucket5c1457b7-151mo29j9uf83\\\"},\\\"object\\\":{\\\"key\\\":\\\"2020-11-27-23-16-48-08AB4BC89388039F\\\",\\\"size\\\":3092,\\\"eTag\\\":\\\"6f24045964158499b97615447dce0710\\\",\\\"sequencer\\\":\\\"005FC188E0308AA05A\\\"}}}]}\",\n  \"Timestamp\" : \"2020-11-27T23:16:48.770Z\",\n  \"SignatureVersion\" : \"1\",\n  \"Signature\" : \"fxmieXOR3/1YJJMhfGw/RVr/XREAuc6rlCd+7jOqIJwhUSSDSIJC+Tqlbbmvw9NDn1y1m3XW0VpiY+xWUGgWujJm5xb6zGIXlU9+g50rGVhX/UpSbEPB4q5gOZzaL+vKbyB2LVDSI8Q631fKz7uaBLbAbWJoF3ZjNfzaFT76R32RgxKoLzQl1QRuT0GjiSCCW6y/N5FHc5fOngdn1R166raQP0kJojvGglR/dPmGtJi2pIUpXlxMJnf/YCs+4FsvcNNNuGa2xASuFVLZ77puViNQXTC6wbLg3YJmfAFYd8YqEkjWVnBauFtlnSRMIinyl5EpNso4s0TdY6BmSZnYzQ==\",\n  \"SigningCertURL\" : \"https://sns.us-west-2.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem\",\n  \"UnsubscribeURL\" : \"https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:696965430582:s3-to-elasticsearch-access-logs-accesslogtopic6A6F66D7-1CVZECE32AT4M:3e906df4-be15-4b1c-a98f-48086fb5f63b\"\n}"}], "ResponseMetadata": {"RequestId": "569d7114-2050-56b2-b4e6-292fac8af0b7", "HTTPStatusCode": 200, "HTTPHeaders": {"x-amzn-requestid": "569d7114-2050-56b2-b4e6-292fac8af0b7", "date": "Fri, 27 Nov 2020 23:24:10 GMT", "content-type": "text/xml", "content-length": "3607"}, "RetryAttempts": 0}}
+
 
 region = os.environ['AWS_REGION']
 firehose_name = os.environ['FIREHOSE_NAME']
@@ -104,8 +94,9 @@ def get_json_data(json_data):
 
     json_data[0]['TimeForElasticSearch'] = get_elasticsearch_time(Time)
 
-    print("\n\n TimeForElasticSearch created from log")
+    print("\n\nTimeForElasticSearch created from log")
     print(json_data[0]['TimeForElasticSearch'])
+    return json_data
 
 
 def get_sqs_message(QUEUEURL, sqs_client):
@@ -140,8 +131,6 @@ def get_sqs_message(QUEUEURL, sqs_client):
             time.sleep(5)
             continue
         
-    message_body=json.loads(receive_message_response['Messages'][0]['Body'])
-    print("message_body = {0} \n".format(message_body))
 
     ReceiptHandle = receive_message_response['Messages'][0]['ReceiptHandle']
     delete_message_response = sqs_client.delete_message(
@@ -157,15 +146,39 @@ def get_sqs_message(QUEUEURL, sqs_client):
 
 
 
-def process_sqs_message(event, file_path, s3_client):
+def process_sqs_message(event):
     ################################################################################################################
     #   Unpack the message from SQS and get bucket name and object name
     ################################################################################################################
-    event_message = json.loads(event.Message)
-    records_list = json.loads(event.Message)
-    for record in records_list:
-        s3_bucket_name = record['Message']['s3']['bucket']['name']
-        s3_object_key = record['Message']['s3']['object']['key']
+    # event_messages = json.loads(event)
+    # Messages = json.loads(event_messages['Messages'])
+    Messages = event['Messages']
+    for message in Messages:
+        print("\nmessage = {0}".format(message))
+        print("\ntype(message) = {0}\n".format(type(message)))
+
+        message_body = message['Body']
+        print("\nmessage_body = {0}".format(message_body))
+        print("\ntype(message_body) = {0}\n".format(type(message_body)))
+
+        message_body_dict = json.loads(message_body)
+        print("\nmessage_body_dict = {0}".format(message_body_dict))
+        print("\ntype(message_body_dict) = {0}\n".format(type(message_body_dict)))
+
+        message_within_message_body_str = message_body_dict['Message']
+        print("\nmessage_within_message_body_str = {0}".format(message_within_message_body_str))
+        print("\ntype(message_within_message_body_str) = {0}\n".format(type(message_within_message_body_str)))
+
+        message_within_message_body = json.loads(message_within_message_body_str)
+        print("\nmessage_within_message_body = {0}".format(message_within_message_body))
+        print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
+
+        s3_notification_records = message_within_message_body['Records']
+
+        print("\ns3_notification_records = {0}".format(s3_notification_records))
+
+        s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
+        s3_object_key = s3_notification_records[0]['s3']['object']['key']
         print(s3_bucket_name + ":" + s3_object_key)
 
         # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
@@ -175,9 +188,9 @@ def process_sqs_message(event, file_path, s3_client):
         #   Get the data from S3  
         ################################################################################################################
         try:
-            s3_client.Bucket(s3_bucket_name).download_file(KEY, file_path)
+            s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
             # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
-            print("Download Complete")
+            print("\n S3 File Download: COMPLETE\n")
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
                 print("The object does not exist.")
@@ -185,7 +198,7 @@ def process_sqs_message(event, file_path, s3_client):
                 raise
 
 
-def convert_and_save_json(file_path):
+def convert_and_save_json():
     ################################################################################################################
     #   Convert and Save the data from S3 in JSON format
     ################################################################################################################
@@ -196,43 +209,47 @@ def convert_and_save_json(file_path):
     with open(file_path, 'r') as f:
         json_data = json.load(f)
 
-    # print("\n\nDISPLAY CREATED JSON FILE CONTENTS")
-    # print(json_data)
+    print("\n\nDISPLAY CREATED JSON FILE CONTENTS")
+    print(json_data)
 
+    return json_data
 
-def put_object_in_kinesis_firehose_stream():
+def put_object_in_kinesis_firehose_stream(json_data_from_local_file):
     ################################################################################################################
     #   for each object, Put records into the Firehose stream
     ################################################################################################################
     # firehose_name = firehose_name
     firehose_client = boto3.client('firehose')
 
-    json_data = get_json_data()
+    json_data_list = get_json_data(json_data_from_local_file)
+    json_data = json_data_list[0]
 
-    print('Putting 1 record into the Firehose one at a time')
+    print('Putting 1 record into the Firehose one at a time\n')
+    print("\njson_data = {0}".format(json_data))
+    print("\ntype(json_data) = {0}\n".format(type(json_data)))
     # num_failures = 0
-    for line in json_data:
+    # for line in json_data:
         # Read a record of test data
 
         # logging.info(line)
         # print(line)
         # time.sleep(0.1)
         # record = {'Data': line}
-        record = line
-        record_string = json.dumps(record)
-        encoded_record = record_string.encode("ascii")
+        # record = line
+    record = json_data
+    record_string = json.dumps(record)
+    encoded_record = record_string.encode("ascii")
 
-        # Put the record into the Firehose stream
-        try:
-            for x in range(0, 300):
-                result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
-                # time.sleep(0.1)
-                print('SUCCESS: SENDING into the Firehose one at a time')
-            # num_failures = num_failures + result['FailedPutCount']
-            # logging.info(f'NOT Resending {num_failures} failed records')
-        except ClientError as e:
-            logging.error(e)
-            exit(1)
+    # Put the record into the Firehose stream
+    try:
+        result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
+        # time.sleep(0.1)
+        print('\nSUCCESS: SENDING into the Firehose one at a time')
+    except ClientError as e:
+        print('\nFAILED: SENDING into the Firehose one at a time\n')
+        print(e)
+        exit(1)
+
 
 
     print('COMPLETED: Putting 1 record into the Firehose one at a time')
@@ -250,9 +267,9 @@ def lambda_handler(event, context):
     # logger.info('## EVENT')
     # logger.info(event)
 
-    process_sqs_message(message, file_path)
-    convert_and_save_json(file_path)
-    put_object_in_kinesis_firehose_stream(file_path)
+    process_sqs_message(event)
+    json_data_from_local_file = convert_and_save_json()
+    put_object_in_kinesis_firehose_stream(json_data_from_local_file)
 
 ################################################################################################################
 ################################################################################################################
@@ -287,10 +304,11 @@ def lambda_handler(event, context):
 # LOCAL TESTING and DEBUGGING  
 ################################################################################################################
 
-event = get_sqs_message(QUEUEURL, sqs_client)
-print("\n event={0}\n".format(event))
-
-lambda_handler(event,context)
+# for x in range(0, 300):
+while True:
+    event = get_sqs_message(QUEUEURL, sqs_client)
+    print("\n event={0}\n".format(json.dumps(event)))
+    lambda_handler(event,context)
 
 
 
@@ -402,6 +420,16 @@ lambda_handler(event,context)
 
 
         ################################################################################################################
-        #   Loop through the items in the file from S3 
+        #   Loop through putting data into Elasticsearch 
         ################################################################################################################
 
+    # try:
+    #     for x in range(0, 300):
+    #         result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
+    #         # time.sleep(0.1)
+    #         print('SUCCESS: SENDING into the Firehose one at a time')
+    #     # num_failures = num_failures + result['FailedPutCount']
+    #     # logging.info(f'NOT Resending {num_failures} failed records')
+    # except ClientError as e:
+    #     logging.error(e)
+    #     exit(1)

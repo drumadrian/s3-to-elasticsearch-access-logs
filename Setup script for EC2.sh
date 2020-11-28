@@ -23,7 +23,7 @@ cd s3-to-elasticsearch-access-logs
 pip3 install -r requirements.txt 
 
 export AWS_REGION='us-west-2'
-export FIREHOSE_NAME='s3-to-elasticsearch-accesslogs'
+export FIREHOSE_NAME='s3-to-elasticsearch-accesslogs3'
 export QUEUEURL='https://sqs.us-west-2.amazonaws.com/696965430582/s3-to-elasticsearch-access-logs-sqstoelasticsearchservicequeueC036-1B9QNWKG9JSRA'
 
 cd s3-to-elasticsearch-access-logs
