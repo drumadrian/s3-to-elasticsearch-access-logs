@@ -43,7 +43,6 @@ index_name = "s3-to-elasticcloud"
 file_path = '/tmp/record.json'
 sqs_client = boto3.client('sqs')
 s3_client = boto3.resource('s3')
-context = "-"
 
 # Create a Secrets Manager client
 session = boto3.session.Session()
@@ -274,47 +273,48 @@ def send_object_to_elasticcloud(json_data_from_local_file):
     ################################################################################################################
 
     json_data_list = get_json_data(json_data_from_local_file)
-    json_data = json_data_list[0]
+    for json_data in json_data_list:
+        # json_data = json_data_list[0]
 
-    print('Putting 1 record into the Elastic Cloud one at a time\n')
-    print("\njson_data = {0}".format(json_data))
-    print("\ntype(json_data) = {0}\n".format(type(json_data)))
+        print('Putting 1 record into the Elastic Cloud one at a time\n')
+        print("\njson_data = {0}".format(json_data))
+        print("\ntype(json_data) = {0}\n".format(type(json_data)))
 
-    # Connect to Elastic Cloud
-    elasticcloudclient = Elasticsearch(
-        cloud_id=secret_dictionary['elasticcloud_cloud_id'],
-        http_auth=(secret_dictionary['elasticcloud_username'], secret_dictionary['elasticcloud_password']),
-    )
+        # Connect to Elastic Cloud
+        elasticcloudclient = Elasticsearch(
+            cloud_id=secret_dictionary['elasticcloud_cloud_id'],
+            http_auth=(secret_dictionary['elasticcloud_username'], secret_dictionary['elasticcloud_password']),
+        )
 
-    # Put the record into the Elastic Cloud cluster
-    try:
-        # doc = {
-        #     'author': 'kimchy',
-        #     'text': 'Elasticsearch: cool. bonsai cool.',
-        #     'timestamp': datetime.now(),
-        # }
-        res = elasticcloudclient.index(index=index_name, body=json_data)
-        print('res[\'result\']=')
-        print(res['result'])
+        # Put the record into the Elastic Cloud cluster
+        try:
+            # doc = {
+            #     'author': 'kimchy',
+            #     'text': 'Elasticsearch: cool. bonsai cool.',
+            #     'timestamp': datetime.now(),
+            # }
+            res = elasticcloudclient.index(index=index_name, body=json_data)
+            print('res[\'result\']=')
+            print(res['result'])
 
-        # res = es.get(index=index_name, id=1)
-        # print(res['_source'])
+            # res = es.get(index=index_name, id=1)
+            # print(res['_source'])
 
-        # es.indices.refresh(index="test-index")
+            # es.indices.refresh(index="test-index")
 
-        # res = es.search(index="test-index", body={"query": {"match_all": {}}})
-        # print("Got %d Hits:" % res['hits']['total']['value'])
-        # for hit in res['hits']['hits']:
-        #     print("%(timestamp)s %(author)s: %(text)s" % hit["_source"])
+            # res = es.search(index="test-index", body={"query": {"match_all": {}}})
+            # print("Got %d Hits:" % res['hits']['total']['value'])
+            # for hit in res['hits']['hits']:
+            #     print("%(timestamp)s %(author)s: %(text)s" % hit["_source"])
 
-        print('\nSUCCESS: SENDING into the Elastic Cloud cluster one at a time')
-    except Exception as e:
-        print('\nFAILED: SENDING into the Elastic Cloud cluster one at a time\n')
-        print(e)
-        exit(1)
+            print('\nSUCCESS: SENDING into the Elastic Cloud cluster one at a time')
+        except Exception as e:
+            print('\nFAILED: SENDING into the Elastic Cloud cluster one at a time\n')
+            print(e)
+            exit(1)
 
 
-    print('COMPLETED: Putting 1 record into the Elastic Cloud cluster one at a time')
+    print('COMPLETED: Putting {0} records into the Elastic Cloud cluster one at a time'.format( len(json_data_list) ))
 
 
 
@@ -351,6 +351,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     # for x in range(0, 300):
+    context = "-"
     while True:
         event = get_sqs_message(QUEUEURL, sqs_client)
         print("\n event={0}\n".format(json.dumps(event)))

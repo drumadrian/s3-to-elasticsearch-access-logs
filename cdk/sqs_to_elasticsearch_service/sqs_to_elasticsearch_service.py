@@ -43,7 +43,6 @@ file_path = '/tmp/record.json'
 sqs_client = boto3.client('sqs')
 s3_client = boto3.resource('s3')
 firehose_client = boto3.client('firehose')
-context = "not_used"
 
 ################################################################################################################
 #   Config
@@ -222,38 +221,37 @@ def put_object_in_kinesis_firehose_stream(json_data_from_local_file):
     # firehose_name = firehose_name
 
     json_data_list = get_json_data(json_data_from_local_file)
-    json_data = json_data_list[0]
+    for json_data in json_data_list:
+        # json_data = json_data_list[0]
 
-    print('Putting 1 record into the Firehose one at a time\n')
-    print("\njson_data = {0}".format(json_data))
-    print("\ntype(json_data) = {0}\n".format(type(json_data)))
-    # num_failures = 0
-    # for line in json_data:
-        # Read a record of test data
+        print('Putting 1 record into the Firehose one at a time\n')
+        print("\njson_data = {0}".format(json_data))
+        print("\ntype(json_data) = {0}\n".format(type(json_data)))
+        # num_failures = 0
+        # for line in json_data:
+            # Read a record of test data
 
-        # logging.info(line)
-        # print(line)
-        # time.sleep(0.1)
-        # record = {'Data': line}
-        # record = line
-    record = json_data
-    record_string = json.dumps(record)
-    encoded_record = record_string.encode("ascii")
+            # logging.info(line)
+            # print(line)
+            # time.sleep(0.1)
+            # record = {'Data': line}
+            # record = line
+        record = json_data
+        record_string = json.dumps(record)
+        encoded_record = record_string.encode("ascii")
 
-    # Put the record into the Firehose stream
-    try:
-        result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
-        # time.sleep(0.1)
-        print('\nSUCCESS: SENDING into the Firehose one at a time')
-    except ClientError as e:
-        print('\nFAILED: SENDING into the Firehose one at a time\n')
-        print(e)
-        exit(1)
+        # Put the record into the Firehose stream
+        try:
+            result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
+            # time.sleep(0.1)
+            print('\nSUCCESS: SENDING into the Firehose one at a time')
+        except ClientError as e:
+            print('\nFAILED: SENDING into the Firehose one at a time\n')
+            print(e)
+            exit(1)
 
 
-
-    print('COMPLETED: Putting 1 record into the Firehose one at a time')
-
+    print("COMPLETED: Putting {0} records into the Firehose one at a time".format( len(json_data_list) ))
 
 
 ################################################################################################################
@@ -286,6 +284,7 @@ def lambda_handler(event, context):
 # for x in range(0, 300):
 if __name__ == "__main__":
     # for x in range(0, 300):
+    context = "-"
     while True:
         event = get_sqs_message(QUEUEURL, sqs_client)
         print("\n event={0}\n".format(json.dumps(event)))
