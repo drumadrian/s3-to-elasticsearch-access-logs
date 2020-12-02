@@ -170,7 +170,7 @@ def get_sqs_message(QUEUEURL, sqs_client):
             # MessageAttributeNames=[
             #     'string',
             # ],
-            MaxNumberOfMessages=1
+            MaxNumberOfMessages=10
             # VisibilityTimeout=123,
             # WaitTimeSeconds=123,
             # ReceiveRequestAttemptId='string'
@@ -199,7 +199,7 @@ def get_sqs_message(QUEUEURL, sqs_client):
 
 
 
-def process_sqs_message(event):
+def process_sqs_message(message):
     ################################################################################################################
     #   Unpack the message from SQS and get bucket name and object name
     ################################################################################################################
@@ -207,7 +207,7 @@ def process_sqs_message(event):
     # Messages = json.loads(event_messages['Messages'])
 
     # Messages = event['Messages']
-    message = event
+    # message = event
     # for message in event:
     print("\nmessage = {0}".format(message))
     print("\ntype(message) = {0}\n".format(type(message)))
@@ -229,6 +229,66 @@ def process_sqs_message(event):
     print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
 
     s3_notification_records = message_within_message_body['Records']
+
+    print("\ns3_notification_records = {0}".format(s3_notification_records))
+
+    s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
+    s3_object_key = s3_notification_records[0]['s3']['object']['key']
+    print(s3_bucket_name + ":" + s3_object_key)
+
+    # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
+    # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
+
+    ################################################################################################################
+    #   Get the data from S3  
+    ################################################################################################################
+    try:
+        s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
+        # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
+        print("\n S3 File Download: COMPLETE\n")
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            print("The object does not exist.")
+        else:
+            raise
+
+def process_lambda_sqs_record(record):
+    ################################################################################################################
+    #   Unpack the message from SQS and get bucket name and object name
+    ################################################################################################################
+    # event_messages = json.loads(event)
+    # Messages = json.loads(event_messages['Messages'])
+
+    # Messages = event['Messages']
+    # message = record
+    # for message in event:
+    # print("\nmessage = {0}".format(message))
+    # print("\ntype(message) = {0}\n".format(type(message)))
+
+    # message_body = message['body']
+    # print("\nmessage_body = {0}".format(message_body))
+    # print("\ntype(message_body) = {0}\n".format(type(message_body)))
+
+    print("\nrecord = {0}".format(record))
+    print("\ntype(record) = {0}\n".format(type(record)))
+
+    record_body = record['body']
+    print("\nrecord_body = {0}".format(record_body))
+    print("\ntype(record_body) = {0}\n".format(type(record_body)))
+
+    record_body_dict = json.loads(record_body)
+    print("\nrecord_body_dict = {0}".format(record_body_dict))
+    print("\ntype(record_body_dict) = {0}\n".format(type(record_body_dict)))
+
+    message_within_record_body_str = record_body_dict['Message']
+    print("\nmessage_within_record_body_str = {0}".format(message_within_record_body_str))
+    print("\ntype(message_within_record_body_str) = {0}\n".format(type(message_within_record_body_str)))
+
+    message_within_record_body = json.loads(message_within_record_body_str)
+    print("\nmessage_within_record_body = {0}".format(message_within_record_body))
+    print("\ntype(message_within_record_body) = {0}\n".format(type(message_within_record_body)))
+
+    s3_notification_records = message_within_record_body['Records']
 
     print("\ns3_notification_records = {0}".format(s3_notification_records))
 
@@ -332,16 +392,16 @@ def lambda_handler(event, context):
     # logger.info(event)
     print("\n Lambda event={0}\n".format(json.dumps(event)))
 
-    if context != "-": #NOT LOCAL EXECUTION 
+    if context == "-": #RUNNING A LOCAL EXECUTION 
+        for Message in event['Messages']:
+            process_sqs_message(Message)
+            json_data_from_local_file = convert_and_save_json()
+            send_object_to_elasticcloud(json_data_from_local_file)
+    else:   #RUNNING A LAMBDA INVOCATION
         # Todo 
         # secret_dictionary = get_secret(context)
         for Record in event['Records']:
-            process_sqs_message(Record)
-            json_data_from_local_file = convert_and_save_json()
-            send_object_to_elasticcloud(json_data_from_local_file)
-    else: 
-        for Message in event['Messages']:
-            process_sqs_message(Message)
+            process_lambda_sqs_record(Record)
             json_data_from_local_file = convert_and_save_json()
             send_object_to_elasticcloud(json_data_from_local_file)
 
