@@ -264,7 +264,8 @@ def lambda_handler(event, context):
     # logger.info(os.environ)
     # logger.info('## EVENT')
     # logger.info(event)
-
+    print("\n Lambda event={0}\n".format(json.dumps(event)))
+    
     process_sqs_message(event)
     json_data_from_local_file = convert_and_save_json()
     put_object_in_kinesis_firehose_stream(json_data_from_local_file)

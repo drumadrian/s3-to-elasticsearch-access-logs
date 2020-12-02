@@ -328,6 +328,7 @@ def lambda_handler(event, context):
     # logger.info(os.environ)
     # logger.info('## EVENT')
     # logger.info(event)
+    print("\n Lambda event={0}\n".format(json.dumps(event)))
 
 
     if context != "-":
