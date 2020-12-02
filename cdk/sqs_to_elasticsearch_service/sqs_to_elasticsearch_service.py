@@ -152,50 +152,52 @@ def process_sqs_message(event):
     ################################################################################################################
     # event_messages = json.loads(event)
     # Messages = json.loads(event_messages['Messages'])
-    Messages = event['Messages']
-    for message in Messages:
-        print("\nmessage = {0}".format(message))
-        print("\ntype(message) = {0}\n".format(type(message)))
 
-        message_body = message['Body']
-        print("\nmessage_body = {0}".format(message_body))
-        print("\ntype(message_body) = {0}\n".format(type(message_body)))
+    # Messages = event['Messages']
+    message = event
+    # for message in event:
+    print("\nmessage = {0}".format(message))
+    print("\ntype(message) = {0}\n".format(type(message)))
 
-        message_body_dict = json.loads(message_body)
-        print("\nmessage_body_dict = {0}".format(message_body_dict))
-        print("\ntype(message_body_dict) = {0}\n".format(type(message_body_dict)))
+    message_body = message['Body']
+    print("\nmessage_body = {0}".format(message_body))
+    print("\ntype(message_body) = {0}\n".format(type(message_body)))
 
-        message_within_message_body_str = message_body_dict['Message']
-        print("\nmessage_within_message_body_str = {0}".format(message_within_message_body_str))
-        print("\ntype(message_within_message_body_str) = {0}\n".format(type(message_within_message_body_str)))
+    message_body_dict = json.loads(message_body)
+    print("\nmessage_body_dict = {0}".format(message_body_dict))
+    print("\ntype(message_body_dict) = {0}\n".format(type(message_body_dict)))
 
-        message_within_message_body = json.loads(message_within_message_body_str)
-        print("\nmessage_within_message_body = {0}".format(message_within_message_body))
-        print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
+    message_within_message_body_str = message_body_dict['Message']
+    print("\nmessage_within_message_body_str = {0}".format(message_within_message_body_str))
+    print("\ntype(message_within_message_body_str) = {0}\n".format(type(message_within_message_body_str)))
 
-        s3_notification_records = message_within_message_body['Records']
+    message_within_message_body = json.loads(message_within_message_body_str)
+    print("\nmessage_within_message_body = {0}".format(message_within_message_body))
+    print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
 
-        print("\ns3_notification_records = {0}".format(s3_notification_records))
+    s3_notification_records = message_within_message_body['Records']
 
-        s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
-        s3_object_key = s3_notification_records[0]['s3']['object']['key']
-        print(s3_bucket_name + ":" + s3_object_key)
+    print("\ns3_notification_records = {0}".format(s3_notification_records))
 
-        # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
-        # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
+    s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
+    s3_object_key = s3_notification_records[0]['s3']['object']['key']
+    print(s3_bucket_name + ":" + s3_object_key)
 
-        ################################################################################################################
-        #   Get the data from S3  
-        ################################################################################################################
-        try:
-            s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
-            # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
-            print("\n S3 File Download: COMPLETE\n")
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "404":
-                print("The object does not exist.")
-            else:
-                raise
+    # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
+    # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
+
+    ################################################################################################################
+    #   Get the data from S3  
+    ################################################################################################################
+    try:
+        s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
+        # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
+        print("\n S3 File Download: COMPLETE\n")
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            print("The object does not exist.")
+        else:
+            raise
 
 
 def convert_and_save_json():
@@ -265,10 +267,19 @@ def lambda_handler(event, context):
     # logger.info('## EVENT')
     # logger.info(event)
     print("\n Lambda event={0}\n".format(json.dumps(event)))
-    
-    process_sqs_message(event)
-    json_data_from_local_file = convert_and_save_json()
-    put_object_in_kinesis_firehose_stream(json_data_from_local_file)
+
+    if context != "-": #NOT LOCAL EXECUTION 
+        # Todo 
+        # secret_dictionary = get_secret(context)
+        for Record in event['Records']:
+            process_sqs_message(Record)
+            json_data_from_local_file = convert_and_save_json()
+            put_object_in_kinesis_firehose_stream(json_data_from_local_file)
+    else: 
+        for Message in event['Messages']:
+            process_sqs_message(Message)
+            json_data_from_local_file = convert_and_save_json()
+            put_object_in_kinesis_firehose_stream(json_data_from_local_file)
 
 ################################################################################################################
 ################################################################################################################
