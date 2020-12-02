@@ -43,7 +43,7 @@ index_name = "s3-to-elasticcloud"
 file_path = '/tmp/record.json'
 sqs_client = boto3.client('sqs')
 s3_client = boto3.resource('s3')
-context = "not_used"
+context = "-"
 
 # Create a Secrets Manager client
 session = boto3.session.Session()
@@ -330,7 +330,7 @@ def lambda_handler(event, context):
     # logger.info(event)
 
 
-    if context != "not_used":
+    if context != "-":
         secret_dictionary = get_secret(context)
     process_sqs_message(event)
     json_data_from_local_file = convert_and_save_json()
@@ -349,11 +349,12 @@ def lambda_handler(event, context):
 # LOCAL TESTING and DEBUGGING  
 ################################################################################################################
 
-# for x in range(0, 300):
-while True:
-    event = get_sqs_message(QUEUEURL, sqs_client)
-    print("\n event={0}\n".format(json.dumps(event)))
-    lambda_handler(event,context)
+if __name__ == "__main__":
+    # for x in range(0, 300):
+    while True:
+        event = get_sqs_message(QUEUEURL, sqs_client)
+        print("\n event={0}\n".format(json.dumps(event)))
+        lambda_handler(event,context)
 
 
 

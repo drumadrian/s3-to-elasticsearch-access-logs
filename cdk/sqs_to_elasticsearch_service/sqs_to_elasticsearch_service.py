@@ -284,10 +284,12 @@ def lambda_handler(event, context):
 ################################################################################################################
 
 # for x in range(0, 300):
-while True:
-    event = get_sqs_message(QUEUEURL, sqs_client)
-    print("\n event={0}\n".format(json.dumps(event)))
-    lambda_handler(event,context)
+if __name__ == "__main__":
+    # for x in range(0, 300):
+    while True:
+        event = get_sqs_message(QUEUEURL, sqs_client)
+        print("\n event={0}\n".format(json.dumps(event)))
+        lambda_handler(event,context)
 
 
 
