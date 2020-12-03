@@ -269,7 +269,7 @@ class CdkStack(core.Stack):
 
         # sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", "-")
         # sqs_to_elasticsearch_service.add_environment("QUEUEURL", "-")
-        sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", kinesis_firehose_stream.get_att('attribute_name').to_string() )
+        # sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", kinesis_firehose_stream.get_att('attribute_name').to_string() )
         sqs_to_elasticsearch_service.add_environment("QUEUEURL", sqs_to_elasticsearch_service_queue.queue_url )
 
         sqs_to_elastic_cloud.add_environment("ELASTICCLOUD_SECRET_NAME", "-")
