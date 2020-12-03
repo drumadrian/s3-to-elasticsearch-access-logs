@@ -15,6 +15,10 @@ import aws_cdk.aws_cognito as aws_cognito
 # import aws_cdk.aws_apigatewayv2 as aws_apigatewayv2
 import aws_cdk.aws_elasticloadbalancingv2 as aws_elasticloadbalancingv2
 import aws_cdk.aws_ec2 as aws_ec2
+import jsii
+# from ._jsii import *
+# from typing import Union
+# from typing import Union, Any, List, Optional, cast
 
 # from aws_cdk.core import CustomResource
 import aws_cdk.aws_logs as logs
@@ -66,12 +70,16 @@ class CdkStack(core.Stack):
         handler='sqs_to_elastic_cloud.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
+        memory_size=2048,
+        timeout=core.Duration.seconds(300)
         )
 
         sqs_to_elasticsearch_service = aws_lambda.Function(self,'sqs_to_elasticsearch_service',
         handler='sqs_to_elasticsearch_service.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elasticsearch_service'),
+        memory_size=2048,
+        timeout=core.Duration.seconds(300)
         )
 
         # sqs_to_elasticsearch_service.add_environment("kinesis_firehose_name", "-")
@@ -89,6 +97,17 @@ class CdkStack(core.Stack):
         kinesis_log_bucket = aws_s3.Bucket(self, "kinesis_log_bucket")
 
 
+        ###########################################################################
+        # LAMBDA SUPPLEMENTAL POLICIES 
+        ###########################################################################
+        lambda_supplemental_policy_statement = aws_iam.PolicyStatement(
+            effect=aws_iam.Effect.ALLOW,
+            actions=["s3:Get*","s3:List*","firehose:*"],
+            resources=["*"]
+            )
+
+        sqs_to_elastic_cloud.add_to_role_policy(lambda_supplemental_policy_statement)
+        sqs_to_elasticsearch_service.add_to_role_policy(lambda_supplemental_policy_statement)
         ###########################################################################
         # AWS SNS TOPICS 
         ###########################################################################
