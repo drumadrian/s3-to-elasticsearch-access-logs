@@ -237,6 +237,24 @@ class CdkStack(core.Stack):
             tags=None
             )
 
+        # dependancy_stream = aws_kinesisfirehose.CfnDeliveryStream(self, "dependancy_stream",
+        #     delivery_stream_encryption_configuration_input=None, 
+        #     delivery_stream_name=None, 
+        #     delivery_stream_type=None, 
+        #     elasticsearch_destination_configuration=None, 
+        #     extended_s3_destination_configuration=None, 
+        #     http_endpoint_destination_configuration=None, 
+        #     kinesis_stream_source_configuration=None, 
+        #     redshift_destination_configuration=None, 
+        #     s3_destination_configuration=None, 
+        #     splunk_destination_configuration=None, 
+        #     tags=None
+        #     )
+
+
+        resource_dependancy = core.CfnResource(self, "resource_dependancy", type="AWS::S3::Bucket" )
+        kinesis_firehose_stream.add_depends_on(resource_dependancy)
+
         # sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", "-")
         # sqs_to_elasticsearch_service.add_environment("QUEUEURL", "-")
         sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", kinesis_firehose_stream.get_att('attribute_name').to_string() )
