@@ -195,7 +195,8 @@ class CdkStack(core.Stack):
         ###########################################################################
         kinesis_policy_statement = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW,
-            actions=["es:*", "s3:*"],
+            # actions=["es:*", "s3:*", "kms:*", "kinesis:*", "lambda:*"],
+            actions=["*"],
             resources=["*"]
             )
         kinesis_firehose_stream_role = aws_iam.Role(self, "kinesis_firehose_stream_role", assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"))
