@@ -262,14 +262,9 @@ class CdkStack(core.Stack):
             tags=None
             )
 
-
-
-        # resource_dependancy = core.CfnResource(self, "resource_dependancy", type="AWS::S3::Bucket" )
-        # kinesis_firehose_stream.add_depends_on(kinesis_policy_statement)
-
-        # sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", "-")
-        # sqs_to_elasticsearch_service.add_environment("QUEUEURL", "-")
-        # sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", kinesis_firehose_stream.get_att('attribute_name').to_string() )
+        # FIREHOSE_NAME = kinesis_firehose_stream.get_att('delivery_stream_name').to_string()
+        FIREHOSE_NAME = kinesis_firehose_stream.get_att('delivery_stream_name')
+        sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", FIREHOSE_NAME.to_string() )
         sqs_to_elasticsearch_service.add_environment("QUEUEURL", sqs_to_elasticsearch_service_queue.queue_url )
 
         sqs_to_elastic_cloud.add_environment("ELASTICCLOUD_SECRET_NAME", "-")
