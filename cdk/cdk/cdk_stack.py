@@ -15,6 +15,7 @@ import aws_cdk.aws_cognito as aws_cognito
 import aws_cdk.aws_elasticloadbalancingv2 as aws_elasticloadbalancingv2
 import aws_cdk.aws_ec2 as aws_ec2
 import aws_cdk.aws_kinesisfirehose as aws_kinesisfirehose
+import inspect as inspect
 
 # import jsii
 # from ._jsii import *
@@ -262,9 +263,8 @@ class CdkStack(core.Stack):
             tags=None
             )
 
-        # FIREHOSE_NAME = kinesis_firehose_stream.get_att('delivery_stream_name').to_string()
-        FIREHOSE_NAME = kinesis_firehose_stream.get_att('delivery_stream_name')
-        sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", FIREHOSE_NAME.to_string() )
+
+        sqs_to_elasticsearch_service.add_environment("FIREHOSE_NAME", kinesis_firehose_stream.ref )
         sqs_to_elasticsearch_service.add_environment("QUEUEURL", sqs_to_elasticsearch_service_queue.queue_url )
 
         sqs_to_elastic_cloud.add_environment("ELASTICCLOUD_SECRET_NAME", "-")
