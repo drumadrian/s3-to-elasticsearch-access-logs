@@ -238,7 +238,7 @@ class CdkStack(core.Stack):
             # "CloudWatchLoggingOptions" : CloudWatchLoggingOptions,
             # "ClusterEndpoint" : String,
             domain_arn = s3_to_elasticsearch_access_logs_domain.domain_arn,
-            index_name = "s3-to-elasticsearch",
+            index_name = "s3-to-elasticsearch-accesslogs",
             index_rotation_period = "OneHour",
             # "ProcessingConfiguration" : ProcessingConfiguration,
             retry_options = RetryOptions,
