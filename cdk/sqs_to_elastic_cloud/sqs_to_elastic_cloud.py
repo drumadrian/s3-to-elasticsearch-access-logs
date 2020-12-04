@@ -39,7 +39,7 @@ secret_dictionary['elasticcloud_cloud_id'] = os.environ['ELASTIC_CLOUD_ID']
 secret_dictionary['elasticcloud_username'] = os.environ['ELASTIC_CLOUD_USERNAME']
 secret_dictionary['elasticcloud_password'] = os.environ['ELASTIC_CLOUD_PASSWORD']
 
-index_name = "s3-to-elasticcloud"
+index_name = "s3-to-elasticcloud-accesslogs"
 file_path = '/tmp/record.json'
 sqs_client = boto3.client('sqs')
 s3_client = boto3.resource('s3')
