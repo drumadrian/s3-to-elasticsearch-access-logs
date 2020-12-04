@@ -43,6 +43,7 @@ file_path = '/tmp/record.json'
 sqs_client = boto3.client('sqs')
 s3_client = boto3.resource('s3')
 firehose_client = boto3.client('firehose')
+debug = os.getenv('DEBUG', False) in (True, 'True')
 
 ################################################################################################################
 #   Config
@@ -277,28 +278,38 @@ def convert_and_save_json():
 
     return json_data
 
+
+def format_json_data(json_data):
+    ################################################################################################################
+    #   for each object, set the correct data type in the dictionary
+    ################################################################################################################
+    # integer_list = ['Turn-Around Time', 'Total Time', 'Object Size', 'Bytes Sent']
+    for key in json_data:
+        print("\nkey = {0}".format(key))
+        print("\ntype(json_data[key]) = {0}\n".format(type(json_data[key])))
+        json_data[key] = str(json_data[key])
+
+    return json_data
+
+
 def put_object_in_kinesis_firehose_stream(json_data_from_local_file):
     ################################################################################################################
     #   for each object, Put records into the Firehose stream
     ################################################################################################################
-    # firehose_name = firehose_name
-
     json_data_list = get_json_data(json_data_from_local_file)
-    for json_data in json_data_list:
-        # json_data = json_data_list[0]
+    for unformatted_json_data in json_data_list:
 
-        print('Putting 1 record into the Firehose one at a time\n')
-        print("\njson_data = {0}".format(json_data))
-        print("\ntype(json_data) = {0}\n".format(type(json_data)))
-        # num_failures = 0
-        # for line in json_data:
-            # Read a record of test data
+        # print('Putting 1 record into the Firehose one at a time\n')
+        # print("\nunformatted_json_data = {0}".format(unformatted_json_data))
+        # print("\ntype(unformatted_json_data) = {0}\n".format(type(unformatted_json_data)))
 
-            # logging.info(line)
-            # print(line)
-            # time.sleep(0.1)
-            # record = {'Data': line}
-            # record = line
+        json_data = format_json_data(unformatted_json_data)
+
+        for key in json_data:
+            print("\n(Final) key = {0}".format(key))
+            print("\n(Final) value = {0}".format(json_data[key]))
+            print("\n(Final) type(value) = {0}\n".format( type(json_data[key]) ))
+
         record = json_data
         record_string = json.dumps(record)
         encoded_record = record_string.encode("ascii")
