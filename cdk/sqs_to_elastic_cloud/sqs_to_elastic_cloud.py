@@ -342,6 +342,10 @@ def send_object_to_elasticcloud(json_data_from_local_file):
         print("\njson_data = {0}".format(json_data))
         print("\ntype(json_data) = {0}\n".format(type(json_data)))
 
+        # fix problem of S3 delete record with '-' in Object Size causing mapper exception by changing '-' to 0
+        if json_data['Object Size'] == '-':
+            json_data['Object Size'] = 0
+
         # Connect to Elastic Cloud
         elasticcloudclient = Elasticsearch(
             cloud_id=secret_dictionary['elasticcloud_cloud_id'],
@@ -350,24 +354,10 @@ def send_object_to_elasticcloud(json_data_from_local_file):
 
         # Put the record into the Elastic Cloud cluster
         try:
-            # doc = {
-            #     'author': 'kimchy',
-            #     'text': 'Elasticsearch: cool. bonsai cool.',
-            #     'timestamp': datetime.now(),
-            # }
+
             res = elasticcloudclient.index(index=index_name, body=json_data)
             print('res[\'result\']=')
             print(res['result'])
-
-            # res = es.get(index=index_name, id=1)
-            # print(res['_source'])
-
-            # es.indices.refresh(index="test-index")
-
-            # res = es.search(index="test-index", body={"query": {"match_all": {}}})
-            # print("Got %d Hits:" % res['hits']['total']['value'])
-            # for hit in res['hits']['hits']:
-            #     print("%(timestamp)s %(author)s: %(text)s" % hit["_source"])
 
             print('\nSUCCESS: SENDING into the Elastic Cloud cluster one at a time')
         except Exception as e:
