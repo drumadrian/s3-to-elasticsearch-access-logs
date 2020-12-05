@@ -79,7 +79,7 @@ class CdkStack(core.Stack):
         handler='sqs_to_elastic_cloud.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
-        memory_size=2048,
+        memory_size=4096,
         timeout=core.Duration.seconds(300)
         )
 
@@ -87,7 +87,7 @@ class CdkStack(core.Stack):
         handler='sqs_to_elasticsearch_service.lambda_handler',
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elasticsearch_service'),
-        memory_size=2048,
+        memory_size=4096,
         timeout=core.Duration.seconds(300)
         )
 
@@ -111,7 +111,7 @@ class CdkStack(core.Stack):
         ###########################################################################
         lambda_supplemental_policy_statement = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW,
-            actions=["s3:Get*","s3:List*","firehose:*"],
+            actions=["s3:Get*","s3:Head*","s3:List*","firehose:*"],
             resources=["*"]
             )
 
