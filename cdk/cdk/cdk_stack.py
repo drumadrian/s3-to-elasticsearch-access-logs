@@ -132,10 +132,10 @@ class CdkStack(core.Stack):
         ###########################################################################
         # AWS SQS QUEUES
         ###########################################################################
-        sqs_to_elastic_cloud_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue")
-        sqs_to_elasticsearch_service_queue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue")
+        sqs_to_elastic_cloud_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue", visibility_timeout=core.Duration.seconds(300))
+        sqs_to_elasticsearch_service_queue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue", visibility_timeout=core.Duration.seconds(300))
 
-
+        
         ###########################################################################
         # AWS SNS TOPIC SUBSCRIPTIONS
         ###########################################################################
