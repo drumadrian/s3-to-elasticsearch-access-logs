@@ -59,8 +59,8 @@ def get_elasticsearch_time(time_from_record):
     # [23/Nov/2020:07:43:07
     # Got:
     # 2020-Nov-23T07:43:07Z
-
-    print('time_from_record=' + time_from_record)
+    if debug:
+        print('time_from_record=' + time_from_record)
     year = time_from_record[8:12]
     month = time_from_record[4:7]
     day = time_from_record[1:3]
@@ -74,12 +74,13 @@ def get_elasticsearch_time(time_from_record):
     month_number = datetime_object.month
     month_number_string = str(month_number)
 
-    print(year)
-    print(month_number_string)
-    print(day)
-    print(hour)
-    print(minutes)
-    print(seconds)
+    if debug:
+        print(year)
+        print(month_number_string)
+        print(day)
+        print(hour)
+        print(minutes)
+        print(seconds)
 
     newtime = str( year + '-' + month_number_string + '-' + day + 'T' + hour + ':' + minutes + ':' + seconds + 'Z' )
 
@@ -90,13 +91,15 @@ def get_json_data(json_data):
     # Fix Time for Elasticsearch
     Time = json_data[0]['Time']
     # TimeOffset = json_data[0]['Time - Offset']
-    print(Time)
+    if debug:
+        print(Time)
     # [23/Nov/2020:07:43:07
 
     json_data[0]['TimeForElasticSearch'] = get_elasticsearch_time(Time)
 
-    print("\n\nTimeForElasticSearch created from log")
-    print(json_data[0]['TimeForElasticSearch'])
+    if debug:
+        print("\n\nTimeForElasticSearch created from log")
+        print(json_data[0]['TimeForElasticSearch'])
     return json_data
 
 
@@ -125,7 +128,8 @@ def get_sqs_message(QUEUEURL, sqs_client):
         )
         if 'Messages' in receive_message_response:
             number_of_messages = len(receive_message_response['Messages'])
-            print("\n received {0} messages!! ....Processing message \n".format(number_of_messages))
+            if debug:
+                print("\n received {0} messages!! ....Processing message \n".format(number_of_messages))
             break
         else:
             print("\n received 0 messages!! waiting.....5 seconds before retrying \n")
@@ -138,7 +142,8 @@ def get_sqs_message(QUEUEURL, sqs_client):
     QueueUrl=QUEUEURL,
     ReceiptHandle=ReceiptHandle
     )
-    print("delete_message_response = {0}".format(delete_message_response))
+    if debug:
+        print("delete_message_response = {0}".format(delete_message_response))
     return receive_message_response
 
 
@@ -157,32 +162,39 @@ def process_sqs_message(message):
     # Messages = event['Messages']
     # message = event
     # for message in event:
-    print("\nmessage = {0}".format(message))
-    print("\ntype(message) = {0}\n".format(type(message)))
+    if debug:
+        print("\nmessage = {0}".format(message))
+        print("\ntype(message) = {0}\n".format(type(message)))
 
     message_body = message['Body']
-    print("\nmessage_body = {0}".format(message_body))
-    print("\ntype(message_body) = {0}\n".format(type(message_body)))
+    if debug:
+        print("\nmessage_body = {0}".format(message_body))
+        print("\ntype(message_body) = {0}\n".format(type(message_body)))
 
     message_body_dict = json.loads(message_body)
-    print("\nmessage_body_dict = {0}".format(message_body_dict))
-    print("\ntype(message_body_dict) = {0}\n".format(type(message_body_dict)))
+    if debug:
+        print("\nmessage_body_dict = {0}".format(message_body_dict))
+        print("\ntype(message_body_dict) = {0}\n".format(type(message_body_dict)))
 
     message_within_message_body_str = message_body_dict['Message']
-    print("\nmessage_within_message_body_str = {0}".format(message_within_message_body_str))
-    print("\ntype(message_within_message_body_str) = {0}\n".format(type(message_within_message_body_str)))
+    if debug:
+        print("\nmessage_within_message_body_str = {0}".format(message_within_message_body_str))
+        print("\ntype(message_within_message_body_str) = {0}\n".format(type(message_within_message_body_str)))
 
     message_within_message_body = json.loads(message_within_message_body_str)
-    print("\nmessage_within_message_body = {0}".format(message_within_message_body))
-    print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
+    if debug:
+        print("\nmessage_within_message_body = {0}".format(message_within_message_body))
+        print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
 
     s3_notification_records = message_within_message_body['Records']
 
-    print("\ns3_notification_records = {0}".format(s3_notification_records))
+    if debug:
+        print("\ns3_notification_records = {0}".format(s3_notification_records))
 
     s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
     s3_object_key = s3_notification_records[0]['s3']['object']['key']
-    print(s3_bucket_name + ":" + s3_object_key)
+    if debug:
+        print(s3_bucket_name + ":" + s3_object_key)
 
     # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
     # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
@@ -193,7 +205,8 @@ def process_sqs_message(message):
     try:
         s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
         # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
-        print("\n S3 File Download: COMPLETE\n")
+        if debug:
+            print("\n S3 File Download: COMPLETE\n")
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             print("The object does not exist.")
@@ -217,43 +230,47 @@ def process_lambda_sqs_record(record):
     # print("\nmessage_body = {0}".format(message_body))
     # print("\ntype(message_body) = {0}\n".format(type(message_body)))
 
-    print("\nrecord = {0}".format(record))
-    print("\ntype(record) = {0}\n".format(type(record)))
+    if debug:
+        print("\nrecord = {0}".format(record))
+        print("\ntype(record) = {0}\n".format(type(record)))
 
     record_body = record['body']
-    print("\nrecord_body = {0}".format(record_body))
-    print("\ntype(record_body) = {0}\n".format(type(record_body)))
+    if debug:
+        print("\nrecord_body = {0}".format(record_body))
+        print("\ntype(record_body) = {0}\n".format(type(record_body)))
 
     record_body_dict = json.loads(record_body)
-    print("\nrecord_body_dict = {0}".format(record_body_dict))
-    print("\ntype(record_body_dict) = {0}\n".format(type(record_body_dict)))
+    if debug:
+        print("\nrecord_body_dict = {0}".format(record_body_dict))
+        print("\ntype(record_body_dict) = {0}\n".format(type(record_body_dict)))
 
     message_within_record_body_str = record_body_dict['Message']
-    print("\nmessage_within_record_body_str = {0}".format(message_within_record_body_str))
-    print("\ntype(message_within_record_body_str) = {0}\n".format(type(message_within_record_body_str)))
+    if debug:
+        print("\nmessage_within_record_body_str = {0}".format(message_within_record_body_str))
+        print("\ntype(message_within_record_body_str) = {0}\n".format(type(message_within_record_body_str)))
 
     message_within_record_body = json.loads(message_within_record_body_str)
-    print("\nmessage_within_record_body = {0}".format(message_within_record_body))
-    print("\ntype(message_within_record_body) = {0}\n".format(type(message_within_record_body)))
+    if debug:
+        print("\nmessage_within_record_body = {0}".format(message_within_record_body))
+        print("\ntype(message_within_record_body) = {0}\n".format(type(message_within_record_body)))
 
     s3_notification_records = message_within_record_body['Records']
 
-    print("\ns3_notification_records = {0}".format(s3_notification_records))
+    if debug:
+        print("\ns3_notification_records = {0}".format(s3_notification_records))
 
     s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
     s3_object_key = s3_notification_records[0]['s3']['object']['key']
-    print(s3_bucket_name + ":" + s3_object_key)
-
-    # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
-    # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
+    if debug:
+        print(s3_bucket_name + ":" + s3_object_key)
 
     ################################################################################################################
     #   Get the data from S3  
     ################################################################################################################
     try:
         s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
-        # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
-        print("\n S3 File Download: COMPLETE\n")
+        if debug:
+            print("\n S3 File Download: COMPLETE\n")
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             print("The object does not exist.")
@@ -273,8 +290,9 @@ def convert_and_save_json():
     with open(file_path, 'r') as f:
         json_data = json.load(f)
 
-    print("\n\nDISPLAY CREATED JSON FILE CONTENTS")
-    print(json_data)
+    if debug:
+        print("\n\nDISPLAY CREATED JSON FILE CONTENTS")
+        print(json_data)
 
     return json_data
 
@@ -285,8 +303,9 @@ def format_json_data(json_data):
     ################################################################################################################
     # integer_list = ['Turn-Around Time', 'Total Time', 'Object Size', 'Bytes Sent']
     for key in json_data:
-        print("\nkey = {0}".format(key))
-        print("\ntype(json_data[key]) = {0}\n".format(type(json_data[key])))
+        if debug:
+            print("\nkey = {0}".format(key))
+            print("\ntype(json_data[key]) = {0}\n".format(type(json_data[key])))
         json_data[key] = str(json_data[key])
 
     return json_data
@@ -305,10 +324,11 @@ def put_object_in_kinesis_firehose_stream(json_data_from_local_file):
 
         json_data = format_json_data(unformatted_json_data)
 
-        for key in json_data:
-            print("\n(Final) key = {0}".format(key))
-            print("\n(Final) value = {0}".format(json_data[key]))
-            print("\n(Final) type(value) = {0}\n".format( type(json_data[key]) ))
+        if debug:
+            for key in json_data:
+                print("\n(Final) key = {0}".format(key))
+                print("\n(Final) value = {0}".format(json_data[key]))
+                print("\n(Final) type(value) = {0}\n".format( type(json_data[key]) ))
 
         record = json_data
         record_string = json.dumps(record)
@@ -318,7 +338,8 @@ def put_object_in_kinesis_firehose_stream(json_data_from_local_file):
         try:
             result = firehose_client.put_record(DeliveryStreamName=firehose_name, Record={'Data': encoded_record})
             # time.sleep(0.1)
-            print('\nSUCCESS: SENDING into the Firehose one at a time')
+            if debug:
+                print('\nSUCCESS: SENDING into the Firehose one at a time')
         except ClientError as e:
             print('\nFAILED: SENDING into the Firehose one at a time\n')
             print(e)
@@ -338,7 +359,8 @@ def lambda_handler(event, context):
     # logger.info(os.environ)
     # logger.info('## EVENT')
     # logger.info(event)
-    print("\n Lambda event={0}\n".format(json.dumps(event)))
+    if debug:
+        print("\n Lambda event={0}\n".format(json.dumps(event)))
 
     if context == "-": #RUNNING A LOCAL EXECUTION 
         # Todo 
@@ -371,7 +393,8 @@ if __name__ == "__main__":
     context = "-"
     while True:
         event = get_sqs_message(QUEUEURL, sqs_client)
-        print("\n event={0}\n".format(json.dumps(event)))
+        if debug:
+            print("\n event={0}\n".format(json.dumps(event)))
         lambda_handler(event,context)
 
 

@@ -324,21 +324,16 @@ def process_lambda_sqs_record(record):
     if debug:
         print(s3_bucket_name + ":" + s3_object_key)
 
-    # BUCKET_NAME = 'amazon-s3-bucket-load-test-storagebucket-7el453fxmzen' # replace with your bucket name
-    # KEY = '000009_20:26:20.000009_diagram.png' # replace with your object key
-
     ################################################################################################################
     #   Get the data from S3  
     ################################################################################################################
     try:
         s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
-        # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
         if debug:
             print("\n S3 File Download: COMPLETE\n")
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
-            if debug:
-                print("The object does not exist.")
+            print("The object does not exist.")
         else:
             raise
 
@@ -373,13 +368,6 @@ def format_json_data(json_data):
             print("\ntype(json_data[key]) = {0}\n".format(type(json_data[key])))
         
         json_data[key] = str(json_data[key])
-        
-        # fix problem of S3 delete record with '-' in Object Size and other fields causing mapper exception by changing '-' to 0
-        # if key in integer_list and json_data[key] == '-':
-        #     # ensure all other values are Python strings
-        #     json_data[key] = str(json_data[key])
-
-
 
     # key = Bucket Owner
     # type(json_data[key]) = <class 'str'>
