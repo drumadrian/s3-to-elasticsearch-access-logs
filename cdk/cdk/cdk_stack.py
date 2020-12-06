@@ -157,7 +157,9 @@ class CdkStack(core.Stack):
         ###########################################################################
         # AWS ELASTICSEARCH DOMAIN ACCESS POLICY 
         ###########################################################################
+        this_aws_account = aws_iam.AccountPrincipal(account_id="012345678912")
         s3_to_elasticsearch_access_logs_domain_access_policy_statement = aws_iam.PolicyStatement(
+            principals=[this_aws_account],
             effect=aws_iam.Effect.ALLOW,
             actions=["es:*"],
             resources=["*"]
