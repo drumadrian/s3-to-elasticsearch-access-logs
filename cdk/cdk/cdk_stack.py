@@ -164,11 +164,11 @@ class CdkStack(core.Stack):
             actions=["es:*"],
             resources=["*"]
             )
-        s3_to_elasticsearch_access_logs_domain_access_policy_statement_list=[]
-        s3_to_elasticsearch_access_logs_domain_access_policy_statement_list.append(s3_to_elasticsearch_access_logs_domain_access_policy_statement)
+        # s3_to_elasticsearch_access_logs_domain_access_policy_statement_list=[]
+        # s3_to_elasticsearch_access_logs_domain_access_policy_statement_list.append(s3_to_elasticsearch_access_logs_domain_access_policy_statement)
 
         s3_to_elasticsearch_access_logs_domain = aws_elasticsearch.Domain(self, "s3-to-elasticsearch-access-logs-domain",
-            access_policies=s3_to_elasticsearch_access_logs_domain_access_policy_statement_list,
+            access_policies=s3_to_elasticsearch_access_logs_domain_access_policy_statement,
             version=aws_elasticsearch.ElasticsearchVersion.V7_1,
             capacity={
                 "master_nodes": 3,
