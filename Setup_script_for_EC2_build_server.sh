@@ -27,13 +27,15 @@ node -e "console.log('Running Node.js ' + process.version)"
 
 npm install -g aws-cdk
 
-# sudo yum install -y screen
+sudo yum install -y screen
 
 sudo yum install -y python37
 
-# curl -O https://bootstrap.pypa.io/get-pip.py
+curl -O https://bootstrap.pypa.io/get-pip.py
 
-# python3 get-pip.py
+python3 get-pip.py
+
+pip3 install -U pip
 
 aws configure set region us-west-2
 
@@ -41,34 +43,19 @@ git clone https://github.com/drumadrian/s3-to-elasticsearch-access-logs.git
 
 cd s3-to-elasticsearch-access-logs/cdk
 
-sudo pip3 install -r requirements.txt 
+pip3 install -r requirements.txt 
 
 cd sqs_to_elasticsearch_service/
 
-pip3 install -r requirement.txt --target=.
+pip3 install -r requirements.txt --target=.
 
 cd ../sqs_to_elastic_cloud/
 
-pip3 install -r requirement.txt --target=.
+pip3 install -r requirements.txt --target=.
 
-export AWS_REGION='us-west-2'
-export FIREHOSE_NAME='s3-to-elasticsearch-accesslogs3'
-export QUEUEURL='https://sqs.us-west-2.amazonaws.com/696965430582/s3-to-elasticsearch-access-logs-sqstoelasticsearchservicequeueC036-1B9QNWKG9JSRA'
+cd ..
 
-export AWS_REGION='us-west-2'
-export ELASTIC_CLOUD_ID='-'
-export ELASTIC_CLOUD_USERNAME='elastic'
-export ELASTIC_CLOUD_PASSWORD='-'
-export ELASTICCLOUD_SECRET_NAME='not_set'
-export QUEUEURL='-'
+cdk bootstrap
 
-
-# cd s3-to-elasticsearch-access-logs
-# python3 sqs_to_elasticsearch_service/sqs_to_elasticsearch_service_EC2.py
-
-# cdk deploy
-
-
-
-
+cdk deploy
 
