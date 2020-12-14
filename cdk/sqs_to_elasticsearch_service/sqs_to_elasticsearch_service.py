@@ -132,7 +132,7 @@ def retrieve_s3_access_log(message):
         print("\nmessage = {0}".format(message))
         print("\ntype(message) = {0}\n".format(type(message)))
 
-    message_body = message['Body']
+    message_body = message['body']
     if debug:
         print("\nmessage_body = {0}".format(message_body))
         print("\ntype(message_body) = {0}\n".format(type(message_body)))

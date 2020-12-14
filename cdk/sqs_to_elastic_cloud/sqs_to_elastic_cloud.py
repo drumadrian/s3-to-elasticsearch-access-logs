@@ -195,7 +195,7 @@ def retrieve_s3_access_log(message):
         print("\nmessage = {0}".format(message))
         print("\ntype(message) = {0}\n".format(type(message)))
 
-    message_body = message['Body']
+    message_body = message['body']
     if debug:
         print("\nmessage_body = {0}".format(message_body))
         print("\ntype(message_body) = {0}\n".format(type(message_body)))
@@ -231,57 +231,6 @@ def retrieve_s3_access_log(message):
     try:
         s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
         # s3_client.Bucket(BUCKET_NAME).download_file(KEY, '/Users/druadria/Documents/codeforwork/s3-to-elasticsearch-access-logs/record.json')
-        if debug:
-            print("\n S3 File Download: COMPLETE\n")
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "404":
-            print("The object does not exist.")
-        else:
-            raise
-
-def process_lambda_sqs_record(record):
-    ################################################################################################################
-    #   Unpack the message from SQS and get bucket name and object name
-    ################################################################################################################
-    if debug:
-        print("\nrecord = {0}".format(record))
-        print("\ntype(record) = {0}\n".format(type(record)))
-
-    record_body = record['body']
-    if debug:
-        print("\nrecord_body = {0}".format(record_body))
-        print("\ntype(record_body) = {0}\n".format(type(record_body)))
-
-    record_body_dict = json.loads(record_body)
-    if debug:
-        print("\nrecord_body_dict = {0}".format(record_body_dict))
-        print("\ntype(record_body_dict) = {0}\n".format(type(record_body_dict)))
-
-    message_within_record_body_str = record_body_dict['Message']
-    if debug:
-        print("\nmessage_within_record_body_str = {0}".format(message_within_record_body_str))
-        print("\ntype(message_within_record_body_str) = {0}\n".format(type(message_within_record_body_str)))
-
-    message_within_record_body = json.loads(message_within_record_body_str)
-    if debug:
-        print("\nmessage_within_record_body = {0}".format(message_within_record_body))
-        print("\ntype(message_within_record_body) = {0}\n".format(type(message_within_record_body)))
-
-    s3_notification_records = message_within_record_body['Records']
-
-    if debug:
-        print("\ns3_notification_records = {0}".format(s3_notification_records))
-
-    s3_bucket_name = s3_notification_records[0]['s3']['bucket']['name']
-    s3_object_key = s3_notification_records[0]['s3']['object']['key']
-    if debug:
-        print(s3_bucket_name + ":" + s3_object_key)
-
-    ################################################################################################################
-    #   Get the data from S3  
-    ################################################################################################################
-    try:
-        s3_client.Bucket(s3_bucket_name).download_file(s3_object_key, file_path)
         if debug:
             print("\n S3 File Download: COMPLETE\n")
     except botocore.exceptions.ClientError as e:
