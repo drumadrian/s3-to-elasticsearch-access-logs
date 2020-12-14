@@ -296,7 +296,7 @@ def send_object_to_elasticcloud(json_data_from_local_file):
             print(e)
             exit(1)
 
-    print('COMPLETED: Putting {0} records into the Elastic Cloud cluster one at a time'.format( len(json_data_list) ))
+    print('COMPLETED: Putting {0} records into the Elastic Cloud cluster one at a time'.format( len(json_data_from_local_file) ))
 
 ################################################################################################################
 ################################################################################################################
