@@ -215,7 +215,14 @@ def retrieve_s3_access_log(message):
         print("\nmessage_within_message_body = {0}".format(message_within_message_body))
         print("\ntype(message_within_message_body) = {0}\n".format(type(message_within_message_body)))
 
-    s3_notification_records = message_within_message_body['Records']
+    try:
+        s3_notification_records = message_within_message_body['Records']
+    except:
+        print("Failed to retrieve \'Records\' from message_within_message_body! ")
+        if message_within_message_body['Event'] == "s3:TestEvent":
+            print("Found Amazon S3 notification TestEvent")               
+            print("TestEvent=\n{0}".format(message_within_message_body["Event"]) )                     #https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html
+            raise Exception("....Skipping message")
 
     if debug:
         print("\ns3_notification_records = {0}".format(s3_notification_records))
@@ -311,14 +318,20 @@ def lambda_handler(event, context):
         # Todo 
         # secret_dictionary = get_secret(context)
         for Message in event['Messages']:
-            retrieve_s3_access_log(Message)
-            json_data_from_local_file = convert_and_save_json()
-            send_object_to_elasticcloud(json_data_from_local_file)
+            try:
+                retrieve_s3_access_log(Message)
+                json_data_from_local_file = convert_and_save_json()
+                send_object_to_elasticcloud(json_data_from_local_file)
+            except:
+                print("Failed to process Message: {0}".format(Message) )
     else:   #RUNNING A LAMBDA INVOCATION
         for Record in event['Records']:
-            retrieve_s3_access_log(Record)
-            json_data_from_local_file = convert_and_save_json()
-            send_object_to_elasticcloud(json_data_from_local_file)
+            try:
+                retrieve_s3_access_log(Record)
+                json_data_from_local_file = convert_and_save_json()
+                send_object_to_elasticcloud(json_data_from_local_file)
+            except:
+                print("Failed to process Record: {0}".format(Record) )
 ################################################################################################################
 ################################################################################################################
 #   LAMBDA HANDLER 
