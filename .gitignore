@@ -19645,3 +19645,4 @@ cdk/.venv/lib/python3.7/site-packages/requests_aws4auth-1.0.1.dist-info/REQUESTE
 cdk/.venv/lib/python3.7/site-packages/requests_aws4auth-1.0.1.dist-info/top_level.txt
 cdk/.venv/lib/python3.7/site-packages/requests_aws4auth-1.0.1.dist-info/WHEEL
 notes.sh
+s3-to-elasticsearch-access-logs.code-workspace
