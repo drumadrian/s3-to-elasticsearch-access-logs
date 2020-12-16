@@ -289,9 +289,6 @@ def send_object_to_elasticcloud(json_data_from_local_file):
                 print("\n(Final) value = {0}".format(json_data[key]))
                 print("\n(Final) type(value) = {0}\n".format( type(json_data[key]) ))
 
-        record_string = json.dumps(json_data)
-        encoded_record = record_string.encode("ascii")
-
         # Put the record into the Elastic Cloud cluster
         try:
             res = elasticcloudclient.index(index=index_name, body=json_data)
