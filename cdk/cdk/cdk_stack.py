@@ -14,6 +14,7 @@ import aws_cdk.aws_elasticsearch as aws_elasticsearch
 import aws_cdk.aws_cognito as aws_cognito
 import aws_cdk.aws_elasticloadbalancingv2 as aws_elasticloadbalancingv2
 import aws_cdk.aws_ec2 as aws_ec2
+import aws_cdk.aws_logs as logs
 import aws_cdk.aws_kinesisfirehose as aws_kinesisfirehose
 import inspect as inspect
 
@@ -23,7 +24,6 @@ import inspect as inspect
 # from typing import Union, Any, List, Optional, cast
 
 # from aws_cdk.core import CustomResource
-# import aws_cdk.aws_logs as logs
 # import aws_cdk.custom_resources as cr
 # import aws_cdk.aws_apigatewayv2 as aws_apigatewayv2
 
@@ -80,7 +80,8 @@ class CdkStack(core.Stack):
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
         memory_size=4096,
-        timeout=core.Duration.seconds(300)
+        timeout=core.Duration.seconds(300),
+        log_retention=aws_logs.RetentionDays(1)
         )
 
         sqs_to_elasticsearch_service = aws_lambda.Function(self,'sqs_to_elasticsearch_service',
@@ -88,7 +89,8 @@ class CdkStack(core.Stack):
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elasticsearch_service'),
         memory_size=4096,
-        timeout=core.Duration.seconds(300)
+        timeout=core.Duration.seconds(300),
+        log_retention=aws_logs.RetentionDays(ONE_DAY)
         )
 
         # sqs_to_elasticsearch_service.add_environment("kinesis_firehose_name", "-")
