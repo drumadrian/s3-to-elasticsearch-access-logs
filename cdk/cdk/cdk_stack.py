@@ -81,7 +81,7 @@ class CdkStack(core.Stack):
         code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
         memory_size=4096,
         timeout=core.Duration.seconds(300),
-        log_retention=logs.RetentionDays(1)
+        log_retention=logs.RetentionDays(ONE_DAY)
         )
 
         sqs_to_elasticsearch_service = aws_lambda.Function(self,'sqs_to_elasticsearch_service',
