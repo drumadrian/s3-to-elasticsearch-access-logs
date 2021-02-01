@@ -60,7 +60,7 @@ def get_elasticsearch_time(time_from_record):
     if debug:
         print('time_from_record=' + time_from_record)
 
-    time_from_record_after_replacement = time_from_record.replace('[', ''))
+    time_from_record_after_replacement = time_from_record.replace('[', '')
 
 
     if debug:
@@ -73,9 +73,9 @@ def get_elasticsearch_time(time_from_record):
     day = date_from_record_list[0]
     month = date_from_record_list[1]
     year = date_from_record_list[2]
-    hour = time_from_record_list[0]
-    minutes = time_from_record_list[1]
-    seconds = time_from_record_list[2]
+    hour = time_from_record_list[1]
+    minutes = time_from_record_list[2]
+    seconds = time_from_record_list[3]
 
     # year = time_from_record[8:12]
     # month = time_from_record[4:7]
@@ -89,10 +89,16 @@ def get_elasticsearch_time(time_from_record):
     month_number = datetime_object.month
     month_number_string = str(month_number)
 
+    if len(day) == 1:
+        day = "0" + day
+    if len(month_number_string) == 1:
+        month_number_string = "0" + month_number_string
+
+
     if debug:
-        print(year)
-        print(month_number_string)
         print(day)
+        print(month_number_string)
+        print(year)
         print(hour)
         print(minutes)
         print(seconds)
@@ -157,10 +163,16 @@ def retrieve_s3_access_log(message):
         print("\nmessage = {0}".format(message))
         print("\ntype(message) = {0}\n".format(type(message)))
 
-    message_body = message['body']
-    if debug:
-        print("\nmessage_body = {0}".format(message_body))
-        print("\ntype(message_body) = {0}\n".format(type(message_body)))
+    if "body" in message:
+        message_body = message['body']
+        if debug:
+            print("\nmessage_body = {0}".format(message_body))
+            print("\ntype(message_body) = {0}\n".format(type(message_body)))
+    else: 
+        message_body = message['Body']
+        if debug:
+            print("\nmessage_body = {0}".format(message_body))
+            print("\ntype(message_body) = {0}\n".format(type(message_body)))
 
     message_body_dict = json.loads(message_body)
     if debug:
@@ -329,18 +341,25 @@ def lambda_handler(event, context):
         print("\n Lambda event={0}\n".format(json.dumps(event)))
 
     if context == "-": #RUNNING A LOCAL EXECUTION 
+        number_of_messages_in_event = len(event['Messages'])
+        message_number = 1
         for Message in event['Messages']:
-                retrieve_s3_access_log(Message)
-                json_data_from_local_file = convert_and_save_json()
-                put_object_in_kinesis_firehose_stream(json_data_from_local_file)
+            print("processing message {} of {}".format(message_number, number_of_messages_in_event))
+            retrieve_s3_access_log(Message)
+            json_data_from_local_file = convert_and_save_json()
+            put_object_in_kinesis_firehose_stream(json_data_from_local_file)
+            message_number += 1
     else:   #RUNNING A LAMBDA INVOCATION
+        number_of_records_in_event = len(event['Records'])
+        record_number = 1            
         for Record in event['Records']:
-            try:
-                retrieve_s3_access_log(Record)
-                json_data_from_local_file = convert_and_save_json()
-                put_object_in_kinesis_firehose_stream(json_data_from_local_file)
-            except:
-                print("Failed to process Record: {0}".format(Record) )
+            print("processing record {} of {}".format(record_number, number_of_records_in_event))
+            retrieve_s3_access_log(Record)
+            json_data_from_local_file = convert_and_save_json()
+            put_object_in_kinesis_firehose_stream(json_data_from_local_file)
+            record_number += 1
+
+
 ################################################################################################################
 ################################################################################################################
 #   LAMBDA HANDLER 
