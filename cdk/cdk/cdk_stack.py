@@ -261,7 +261,7 @@ class CdkStack(core.Stack):
             # "ClusterEndpoint" : String,
             domain_arn = s3_to_elasticsearch_access_logs_domain.domain_arn,
             index_name = "s3-to-elasticsearch-accesslogs",
-            index_rotation_period = "OneHour",
+            index_rotation_period = "OneDay",
             # "ProcessingConfiguration" : ProcessingConfiguration,
             retry_options = RetryOptions,
             role_arn = kinesis_firehose_stream_role.role_arn,
