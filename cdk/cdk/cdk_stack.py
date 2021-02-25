@@ -80,7 +80,7 @@ class CdkStack(core.Stack):
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elastic_cloud'),
         memory_size=4096,
-        timeout=core.Duration.seconds(301),
+        timeout=core.Duration.seconds(300),
         log_retention=logs.RetentionDays.ONE_DAY
         )
 
@@ -89,7 +89,7 @@ class CdkStack(core.Stack):
         runtime=aws_lambda.Runtime.PYTHON_3_7,
         code=aws_lambda.Code.asset('sqs_to_elasticsearch_service'),
         memory_size=4096,
-        timeout=core.Duration.seconds(301),
+        timeout=core.Duration.seconds(300),
         log_retention=logs.RetentionDays.ONE_DAY
         )
 
@@ -136,11 +136,11 @@ class CdkStack(core.Stack):
         ###########################################################################
         sqs_to_elasticsearch_service_queue_iqueue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue_dlq")
         sqs_to_elasticsearch_service_queue_dlq = aws_sqs.DeadLetterQueue(max_receive_count=10, queue=sqs_to_elasticsearch_service_queue_iqueue)
-        sqs_to_elasticsearch_service_queue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue", visibility_timeout=core.Duration.seconds(300), dead_letter_queue=sqs_to_elasticsearch_service_queue_dlq)
+        sqs_to_elasticsearch_service_queue = aws_sqs.Queue(self, "sqs_to_elasticsearch_service_queue", visibility_timeout=core.Duration.seconds(301), dead_letter_queue=sqs_to_elasticsearch_service_queue_dlq)
 
         sqs_to_elastic_cloud_queue_iqueue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue_dlq")
         sqs_to_elastic_cloud_queue_dlq = aws_sqs.DeadLetterQueue(max_receive_count=10, queue=sqs_to_elastic_cloud_queue_iqueue)
-        sqs_to_elastic_cloud_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue", visibility_timeout=core.Duration.seconds(300), dead_letter_queue=sqs_to_elastic_cloud_queue_dlq)
+        sqs_to_elastic_cloud_queue = aws_sqs.Queue(self, "sqs_to_elastic_cloud_queue", visibility_timeout=core.Duration.seconds(301), dead_letter_queue=sqs_to_elastic_cloud_queue_dlq)
 
 
         ###########################################################################
